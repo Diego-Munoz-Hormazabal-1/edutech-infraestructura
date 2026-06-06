@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # Servidor de Base de Datos PostgreSQL Unificado
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: edutech_admin
+      POSTGRES_PASSWORD: Secret_Postgres_2026.@
+      POSTGRES_DB: edutech_innovators
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - edutech-network
+
+  # Microservicio 1: Usuarios (Propio puerto 5000)
+  ms-usuario:
+    build: ./Usuario_1
+    container_name: ms-usuario
+    ports:
+      - "5000:5000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/edutech_innovators
+      - SPRING_DATASOURCE_USERNAME=edutech_admin
+      - SPRING_DATASOURCE_PASSWORD=Secret_Postgres_2026.@
+      - SPRING_DRIVER_CLASS=org.postgresql.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - postgres-db
+    networks:
+      - edutech-network
+
+  # Microservicio 2: Cursos (Propio puerto 5001)
+  ms-curso:
+    build: ./Curso_2
+    container_name: ms-curso
+    ports:
+      - "5001:5001"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/edutech_innovators
+      - SPRING_DATASOURCE_USERNAME=edutech_admin
+      - SPRING_DATASOURCE_PASSWORD=Secret_Postgres_2026.@
+      - SPRING_DRIVER_CLASS=org.postgresql.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - postgres-db
+    networks:
+      - edutech-network
+
+  # Microservicio 3: Inscripciones (Exterior: 5100 -> Interior: 5002)
+  ms-inscripcion:
+    build: ./Inscripcion_3
+    container_name: ms-inscripcion
+    ports:
+      - "5100:5002"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/edutech_innovators
+      - SPRING_DATASOURCE_USERNAME=edutech_admin
+      - SPRING_DATASOURCE_PASSWORD=Secret_Postgres_2026.@
+      - SPRING_DRIVER_CLASS=org.postgresql.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - postgres-db
+      - ms-usuario
+    networks:
+      - edutech-network
+
+  # Microservicio 4: Progreso Estudiante (Exterior: 5003 -> Interior: 5003)
+  ms-progreso:
+    build: ./ProgresoEstudiante_4
+    container_name: ms-progreso
+    ports:
+      - "5003:5003"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/edutech_innovators
+      - SPRING_DATASOURCE_USERNAME=edutech_admin
+      - SPRING_DATASOURCE_PASSWORD=Secret_Postgres_2026.@
+      - SPRING_DRIVER_CLASS=org.postgresql.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - postgres-db
+      - ms-usuario
+    networks:
+      - edutech-network
+
+volumes:
+  postgres_data:
+
+networks:
+  edutech-network:
+    driver: bridge
