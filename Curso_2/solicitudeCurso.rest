@@ -1,0 +1,37 @@
+### Listar cursos
+GET http://localhost:5001/cursos
+
+
+
+### Buscar curso por ID
+GET http://localhost:5001/cursos/4
+
+
+
+### Crear curso
+POST http://localhost:5001/cursos
+Content-Type: application/json
+
+{
+  "nombreCurso": "Java Avanzado",
+  "contenido": "Microservicios con Spring Boot",
+  "asignatura": "Programacion ",
+  "idUsuario": 23
+}
+
+
+
+### Actualizar curso
+PUT http://localhost:5001/cursos/1
+Content-Type: application/json
+
+{
+  "nombreCurso": "Java Final",
+  "contenido": "Lógica de programación avanzada", 
+  "asignatura": "Programacion", 
+  "idUsuario": 23
+}
+
+
+### Eliminar curso
+DELETE http://localhost:5001/cursos/4

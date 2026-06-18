@@ -1,97 +1,110 @@
 version: '3.8'
 
 services:
-  # Servidor de Base de Datos PostgreSQL Unificado
-  postgres-db:
-    image: postgres:16-alpine
-    container_name: postgres-db
+  # Servidor de Base de Datos MySQL Unificado
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
     environment:
-      POSTGRES_USER: edutech_admin
-      POSTGRES_PASSWORD: Secret_Postgres_2026.@
-      POSTGRES_DB: edutech_innovators
+      MYSQL_ROOT_PASSWORD: Root_Password_2026!
+      MYSQL_USER: full_stack_1
+      MYSQL_PASSWORD: Tav_2026.@
     ports:
-      - "5432:5432"
+      - "3307:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - edutech-network
+    # ESTO ES LO NUEVO: Docker le hará "ping" a la BD para saber si ya despertó
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pRoot_Password_2026!"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # Microservicio 1: Usuarios (Propio puerto 5000)
+  # Microservicio 1: Usuarios
   ms-usuario:
     build: ./Usuario_1
     container_name: ms-usuario
     ports:
       - "5000:5000"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/edutech_innovators
-      - SPRING_DATASOURCE_USERNAME=edutech_admin
-      - SPRING_DATASOURCE_PASSWORD=Secret_Postgres_2026.@
-      - SPRING_DRIVER_CLASS=org.postgresql.Driver
-      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/edutech_usuarios?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=full_stack_1
+      - SPRING_DATASOURCE_PASSWORD=Tav_2026.@
+      - SPRING_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.MySQLDialect
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      - postgres-db
+      mysql-db:
+        condition: service_healthy # Esperará al healthcheck de MySQL
     networks:
       - edutech-network
 
-  # Microservicio 2: Cursos (Propio puerto 5001)
+  # Microservicio 2: Cursos
   ms-curso:
     build: ./Curso_2
     container_name: ms-curso
     ports:
       - "5001:5001"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/edutech_innovators
-      - SPRING_DATASOURCE_USERNAME=edutech_admin
-      - SPRING_DATASOURCE_PASSWORD=Secret_Postgres_2026.@
-      - SPRING_DRIVER_CLASS=org.postgresql.Driver
-      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/edutech_cursos?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=full_stack_1
+      - SPRING_DATASOURCE_PASSWORD=Tav_2026.@
+      - SPRING_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.MySQLDialect
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      - postgres-db
+      mysql-db:
+        condition: service_healthy
     networks:
       - edutech-network
 
-  # Microservicio 3: Inscripciones (Exterior: 5100 -> Interior: 5002)
+  # Microservicio 3: Inscripciones
   ms-inscripcion:
     build: ./Inscripcion_3
     container_name: ms-inscripcion
     ports:
       - "5100:5002"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/edutech_innovators
-      - SPRING_DATASOURCE_USERNAME=edutech_admin
-      - SPRING_DATASOURCE_PASSWORD=Secret_Postgres_2026.@
-      - SPRING_DRIVER_CLASS=org.postgresql.Driver
-      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/edutech_inscripciones?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=full_stack_1
+      - SPRING_DATASOURCE_PASSWORD=Tav_2026.@
+      - SPRING_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.MySQLDialect
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      - postgres-db
-      - ms-usuario
+      mysql-db:
+        condition: service_healthy
+      ms-usuario:
+        condition: service_started
     networks:
       - edutech-network
 
-  # Microservicio 4: Progreso Estudiante (Exterior: 5003 -> Interior: 5003)
+  # Microservicio 4: Progreso Estudiante
   ms-progreso:
     build: ./ProgresoEstudiante_4
     container_name: ms-progreso
     ports:
       - "5003:5003"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/edutech_innovators
-      - SPRING_DATASOURCE_USERNAME=edutech_admin
-      - SPRING_DATASOURCE_PASSWORD=Secret_Postgres_2026.@
-      - SPRING_DRIVER_CLASS=org.postgresql.Driver
-      - SPRING_JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/edutech_progreso?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=full_stack_1
+      - SPRING_DATASOURCE_PASSWORD=Tav_2026.@
+      - SPRING_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_DIALECT=org.hibernate.dialect.MySQLDialect
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      - postgres-db
-      - ms-usuario
+      mysql-db:
+        condition: service_healthy
+      ms-usuario:
+        condition: service_started
     networks:
       - edutech-network
 
 volumes:
-  postgres_data:
+  mysql_data:
 
 networks:
   edutech-network:
