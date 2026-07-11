@@ -22,16 +22,16 @@ Content-Type: application/json
 
 
 ### Actualizar curso
-PUT http://localhost:5001/cursos/1
+PUT http://localhost:5001/cursos/3
 Content-Type: application/json
 
 {
   "nombreCurso": "Java Final",
   "contenido": "Lógica de programación avanzada", 
   "asignatura": "Programacion", 
-  "idUsuario": 23
+  "idUsuario": 4
 }
 
 
 ### Eliminar curso
-DELETE http://localhost:5001/cursos/4
+DELETE http://localhost:5001/cursos/2

@@ -10,7 +10,7 @@ Content-Type: application/json
 {
   "idUsuario": 19,
   "idCurso": 1,
-  "pagoInscripcion": "PAGADO",
+  "pagoInscripcion": "NO PAGADO",
   "cuponDescuento": "DESC10"
 }
 

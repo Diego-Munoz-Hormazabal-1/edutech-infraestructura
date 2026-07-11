@@ -3,8 +3,8 @@ POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-  "nombre": "Eduardo Martinez",
-  "email": "eduue@correo.cl",
+  "nombre": "Eduardo ",
+  "email": "eduue@correo.xl",
   "password": "claveSegura123",
   "rol": "ESTUDIANTE"
 }
@@ -14,7 +14,7 @@ POST http://localhost:5000/auth/login
 Content-Type: application/json
 
 {
-  "email": "eduue@correo.cl",
+  "email": "eduue@correo.xl",
   "password": "claveSegura123"
 }
 
@@ -23,21 +23,21 @@ Content-Type: application/json
 
 ### 1. USUARIO - LISTAR
 GET http://localhost:5000/usuarios
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZWR1dWVAY29ycmVvLmNsIiwiaWF0IjoxNzgwNzAyNzIyLCJleHAiOjE3ODA3MDYzMjJ9.kd0uB3n3dkO_1a-I4e2oVgYgEXWy5BGtmnMU-fvxWodCmXxkRT1hUWlH7E7W3pO8
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZWR1dWVAY29ycmVvLnhsIiwiaWF0IjoxNzgzNzI4OTc1LCJleHAiOjE3ODM3MzI1NzV9.w4NbPgzj0DsvyhuDFCNFUbnr7owgIyK25-wvJDsYEx-qFC5xDNUP_k5BH4B9y4IH
 
 
 
 ### 3. USUARIO - BUSCAR POR ID
-GET http://localhost:5000/usuarios/41
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZWR1dWVAY29ycmVlZW8uY2wiLCJpYXQiOjE3ODA3MDExMzAsImV4cCI6MTc4MDcwNDczMH0.ZcmyvNAq5-ivljNyNXE5wlzBd8yPslSTFRA_O9rwmKwYFq15fc6qfBdLt5RxgZAi
+GET http://localhost:5000/usuarios/5
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZWR1dWVAY29ycmVvLnhsIiwiaWF0IjoxNzgzNzI4OTc1LCJleHAiOjE3ODM3MzI1NzV9.w4NbPgzj0DsvyhuDFCNFUbnr7owgIyK25-wvJDsYEx-qFC5xDNUP_k5BH4B9y4IH
 
 
 
 
 ### 4. USUARIO - ACTUALIZAR
-PUT http://localhost:5000/usuarios/43
+PUT http://localhost:5000/usuarios/4
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZWR1dWVAY29ycmVvLmNsIiwiaWF0IjoxNzgwNzAyNzIyLCJleHAiOjE3ODA3MDYzMjJ9.kd0uB3n3dkO_1a-I4e2oVgYgEXWy5BGtmnMU-fvxWodCmXxkRT1hUWlH7E7W3pO8
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZWR1dWVAY29ycmVvLnhsIiwiaWF0IjoxNzgzNzI4OTc1LCJleHAiOjE3ODM3MzI1NzV9.w4NbPgzj0DsvyhuDFCNFUbnr7owgIyK25-wvJDsYEx-qFC5xDNUP_k5BH4B9y4IH
 
 
 
@@ -45,10 +45,10 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZ
   "nombre": "Diego Muñoz",
   "email": "diego@correo.caaa",
   "password": "123456",
-  "rol": "ESTUDIANTE"
+  "rol": "PROFESOR"
 }
 
 
 ### 5. USUARIO - ELIMINAR
-DELETE http://localhost:5000/usuarios/42
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZWR1dWVAY29ycmVvLmNsIiwiaWF0IjoxNzgwNzAyNzIyLCJleHAiOjE3ODA3MDYzMjJ9.kd0uB3n3dkO_1a-I4e2oVgYgEXWy5BGtmnMU-fvxWodCmXxkRT1hUWlH7E7W3pO8
+DELETE http://localhost:5000/usuarios/5
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJyb2wiOiJFU1RVRElBTlRFIiwic3ViIjoiZWR1dWVAY29ycmVvLnhsIiwiaWF0IjoxNzgzNzI4OTc1LCJleHAiOjE3ODM3MzI1NzV9.w4NbPgzj0DsvyhuDFCNFUbnr7owgIyK25-wvJDsYEx-qFC5xDNUP_k5BH4B9y4IH
