@@ -25,7 +25,7 @@ public class UsuarioController {
 
     @GetMapping("/saludo") 
     public String obtenerSaludo() {
-        return "Hola mundo desde aws";
+        return "Hola mundo desde aws test";
     }
 
     @Autowired
