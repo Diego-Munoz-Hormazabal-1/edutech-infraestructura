@@ -41,7 +41,7 @@ jobs:
         docker build -t ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest ./Usuario_1
         docker push ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
 
-    # 6. Desplegar en AWS EC2
+    # 6. Desplegar en AWS EC2 usando Docker Compose de forma nativa
     - name: Desplegar en AWS EC2
       uses: appleboy/ssh-action@v0.1.10
       with:
@@ -49,16 +49,11 @@ jobs:
         username: ${{ secrets.AWS_USER }}
         key: ${{ secrets.AWS_SSH_KEY }}
         script: |
-          # 1. Descargar la nueva versión de tu imagen con permisos sudo
+          # 1. Navegar a la carpeta donde vive tu docker-compose.yml en la EC2
+          cd /home/ubuntu/edutech-infraestructura
+          
+          # 2. Descargar la última versión de la imagen que subió GitHub en Docker Hub
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
           
-          # 2. Detener y remover el contenedor de usuario actual usando sudo
-          sudo docker stop ms-usuario || true
-          sudo docker rm ms-usuario || true
-          
-          # 3. Levantar tu nueva imagen en caliente con sudo
-          sudo docker run -d \
-            --name ms-usuario \
-            --network edutech-infraestructura_default \
-            -p 5000:5000 \
-            ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
+          # 3. Forzar a Docker Compose a recrear ÚNICAMENTE el microservicio de usuario en caliente
+          sudo docker compose up -d --force-recreate ms-usuario
