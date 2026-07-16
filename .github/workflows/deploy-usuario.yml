@@ -5,18 +5,18 @@ on:
     branches:
       - main
     paths:
-      - 'Usuario_1/**' # Solo se activa si haces cambios dentro de la carpeta del microservicio de Usuario
+      - 'Usuario_1/**' # Solo se activa si haces cambios reales dentro de esta carpeta
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descargar el código en el servidor temporal de GitHub
+    # 1. Descargar el código en el entorno temporal de GitHub
     - name: Checkout del código
       uses: actions/checkout@v3
 
-    # 2. Configurar Java para compilar el proyecto (Ajusta la versión si usas Java 17 u otra)
+    # 2. Configurar Java para compilar el proyecto (Java 21)
     - name: Configurar JDK 21
       uses: actions/setup-java@v3
       with:
@@ -24,24 +24,24 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
-    # 3. Compilar el microservicio de Usuario usando su propio pom.xml
+    # 3. Compilar el microservicio de Usuario apuntando a su propio pom.xml
     - name: Compilar Usuario_1 con Maven
       run: mvn -f Usuario_1/pom.xml clean package -DskipTests
 
-    # 4. Iniciar sesión en tu Docker Hub de forma segura
+    # 4. Iniciar sesión en Docker Hub de forma segura
     - name: Login en Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # 5. Construir la imagen Docker usando el Dockerfile de Usuario_1 y subirla a tu Docker Hub
+    # 5. Construir la imagen Docker usando el Dockerfile interno de Usuario_1 y subirla a Docker Hub
     - name: Construir y subir imagen Docker
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest ./Usuario_1
         docker push ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
 
-    # 6. Conectarse a tu AWS EC2 y actualizar el contenedor
+    # 6. Conectarse a tu AWS EC2 mediante SSH y actualizar el contenedor en caliente
     - name: Desplegar en AWS EC2
       uses: appleboy/ssh-action@v0.1.10
       with:
@@ -49,13 +49,19 @@ jobs:
         username: ${{ secrets.AWS_USER }}
         key: ${{ secrets.AWS_SSH_KEY }}
         script: |
-          # Descargar la imagen más reciente que acabamos de subir a Docker Hub
+          # 1. Descargar la última versión de la imagen recién subida
           docker pull ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
           
-          # Apagar y eliminar el contenedor viejo si es que ya estaba corriendo en AWS
+          # 2. Detener y remover el contenedor viejo si es que está corriendo o colgado
           docker stop ms-usuario-container || true
           docker rm ms-usuario-container || true
           
-          # Levantar el nuevo contenedor mapeando el puerto de tu microservicio de Usuario
-          # NOTA: Cambia "8081:8081" por el puerto real que use tu microservicio de Usuario (ej. 8080:8080 o el que tengas configurado)
-          docker run -d --name ms-usuario-container -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
+          # 3. Levantar el nuevo contenedor conectado a la red y credenciales de PostgreSQL
+          docker run -d \
+            --name ms-usuario-container \
+            --network edutech-infraestructura_default \
+            -p 8081:8081 \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/edutech_innovators \
+            -e SPRING_DATASOURCE_USERNAME=full_stack_1 \
+            -e SPRING_DATASOURCE_PASSWORD=root \
+            ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
