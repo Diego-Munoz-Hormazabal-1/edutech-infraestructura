@@ -49,15 +49,15 @@ jobs:
         username: ${{ secrets.AWS_USER }}
         key: ${{ secrets.AWS_SSH_KEY }}
         script: |
-          # 1. Descargar la nueva versión de tu imagen
-          docker pull ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
+          # 1. Descargar la nueva versión de tu imagen con permisos sudo
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
           
-          # 2. Detener y remover el contenedor de usuario actual (el que levantó docker-compose)
-          docker stop ms-usuario || true
-          docker rm ms-usuario || true
+          # 2. Detener y remover el contenedor de usuario actual usando sudo
+          sudo docker stop ms-usuario || true
+          sudo docker rm ms-usuario || true
           
-          # 3. Levantar tu nueva imagen en caliente en la misma red y en el puerto 5000
-          docker run -d \
+          # 3. Levantar tu nueva imagen en caliente con sudo
+          sudo docker run -d \
             --name ms-usuario \
             --network edutech-infraestructura_default \
             -p 5000:5000 \
