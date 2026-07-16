@@ -5,18 +5,18 @@ on:
     branches:
       - main
     paths:
-      - 'Usuario_1/**' # Solo se activa si haces cambios reales dentro de esta carpeta
+      - 'Usuario_1/**' # Solo se activa si haces cambios en Usuario_1
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descargar el código en el entorno temporal de GitHub
+    # 1. Descargar el código
     - name: Checkout del código
       uses: actions/checkout@v3
 
-    # 2. Configurar Java para compilar el proyecto (Java 21)
+    # 2. Configurar Java
     - name: Configurar JDK 21
       uses: actions/setup-java@v3
       with:
@@ -24,24 +24,24 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
-    # 3. Compilar el microservicio de Usuario apuntando a su propio pom.xml
+    # 3. Compilar microservicio
     - name: Compilar Usuario_1 con Maven
       run: mvn -f Usuario_1/pom.xml clean package -DskipTests
 
-    # 4. Iniciar sesión en Docker Hub de forma segura
+    # 4. Login en Docker Hub
     - name: Login en Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # 5. Construir la imagen Docker usando el Dockerfile interno de Usuario_1 y subirla a Docker Hub
+    # 5. Construir y subir imagen
     - name: Construir y subir imagen Docker
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest ./Usuario_1
         docker push ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
 
-    # 6. Conectarse a tu AWS EC2 mediante SSH y actualizar el contenedor en caliente
+    # 6. Desplegar en AWS EC2
     - name: Desplegar en AWS EC2
       uses: appleboy/ssh-action@v0.1.10
       with:
@@ -49,19 +49,16 @@ jobs:
         username: ${{ secrets.AWS_USER }}
         key: ${{ secrets.AWS_SSH_KEY }}
         script: |
-          # 1. Descargar la última versión de la imagen recién subida
+          # 1. Descargar la nueva versión de tu imagen
           docker pull ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
           
-          # 2. Detener y remover el contenedor viejo si es que está corriendo o colgado
-          docker stop ms-usuario-container || true
-          docker rm ms-usuario-container || true
+          # 2. Detener y remover el contenedor de usuario actual (el que levantó docker-compose)
+          docker stop ms-usuario || true
+          docker rm ms-usuario || true
           
-          # 3. Levantar el nuevo contenedor conectado a la red y credenciales de PostgreSQL
+          # 3. Levantar tu nueva imagen en caliente en la misma red y en el puerto 5000
           docker run -d \
-            --name ms-usuario-container \
+            --name ms-usuario \
             --network edutech-infraestructura_default \
-            -p 8081:8081 \
-            -e SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/edutech_innovators \
-            -e SPRING_DATASOURCE_USERNAME=full_stack_1 \
-            -e SPRING_DATASOURCE_PASSWORD=root \
+            -p 5000:5000 \
             ${{ secrets.DOCKER_USERNAME }}/ms-usuario:latest
