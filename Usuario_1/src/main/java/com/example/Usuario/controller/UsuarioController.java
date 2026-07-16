@@ -22,6 +22,12 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
+
+    @GetMapping("/saludo") 
+    public String obtenerSaludo() {
+        return "Hola mundo desde aws";
+    }
+
     @Autowired
     private UsuarioService usuarioService;
 
