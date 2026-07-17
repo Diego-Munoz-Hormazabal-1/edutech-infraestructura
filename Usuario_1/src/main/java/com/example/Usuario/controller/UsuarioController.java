@@ -23,9 +23,10 @@ import jakarta.validation.Valid;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    @GetMapping("/saludo") 
+    
+    @GetMapping("/saludo_test") 
     public String obtenerSaludo() {
-        return "Hola mundo desde aws test";
+        return "Hola mundo, este mensaje es un test de CI, numero 10";
     }
 
     @Autowired
