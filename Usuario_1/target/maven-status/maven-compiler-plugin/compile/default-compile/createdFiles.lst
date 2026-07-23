@@ -1,0 +1,5 @@
+com\example\Usuario\config\JWTAuthorizationFilter.class
+com\example\Usuario\config\WebSecurityConfig.class
+com\example\Usuario\config\OpenApiConfiguration.class
+com\example\Usuario\config\WebClientConfig.class
+com\example\Usuario\config\JWTAuthenticationConfig.class

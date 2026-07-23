@@ -10,7 +10,7 @@ services:
       MYSQL_USER: full_stack_1
       MYSQL_PASSWORD: Tav_2026.@
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
